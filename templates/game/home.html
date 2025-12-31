@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense - Game</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='35' y='20' width='30' height='60' fill='%23667eea'/><polygon points='20,80 50,50 80,80' fill='%23764ba2'/><rect x='45' y='10' width='10' height='15' fill='%23ffd700'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+</head>
+<body>
+</div>
+    <div class="game-container">
+        <main class="game-canvas" aria-label="Game Canvas">
+                <div id="gameIdleOverlay" class="game-idle-overlay">
+                    <div class="game-title-float">
+                        <img src="{% static 'img/GameTitle.png' %}" alt="Tower Defense">
+                    </div>
+                    <div class="start-game-prompt">▶ CLICK START GAME ◀</div>
+                </div>
+                <div id="gameLoadingOverlay" class="game-loading-overlay hidden">
+                    <div class="loading-text">LOADING WAVE</div>
+                    <div class="pixel-loader">
+                        <div class="pixel-bar"></div>
+                        <div class="pixel-bar"></div>
+                        <div class="pixel-bar"></div>
+                        <div class="pixel-bar"></div>
+                        <div class="pixel-bar"></div>
+                    </div>
+                </div>
+                <div id="waveCountdownOverlay" class="wave-countdown-overlay hidden">
+                    <div class="wave-title" id="waveTitle">WAVE 1</div>
+                    <div class="countdown-number" id="countdownNumber">3</div>
+                </div>
+                <div id="gameEndOverlay" class="game-end-overlay hidden">
+                    <div class="end-game-message">GAME ENDED</div>
+                    <div class="end-game-stats">
+                        <p>Final Score: <span class="end-game-stats-value" id="finalScore">0</span></p>
+                        <p>Wave Reached: <span class="end-game-stats-value" id="waveReached">1</span></p>
+                        <p>Gold Earned: <span class="end-game-stats-value" id="goldEarned">0</span></p>
+                    </div>
+                    <div class="end-buttons-row">
+                        <button class="wood-button" id="restartGameBtn"><span>Back to Lobby</span></button>
+                        <button class="wood-button" id="replayGameBtn"><span>Replay</span></button>
+                    </div>
+                    <div class="end-buttons-row" style="margin-top: 8px;">
+                        <button class="wood-button" id="ads5LivesBtn" style="display: none;"><span>Click Ads +5 Lives</span></button>
+                    </div>
+                </div>
+                <canvas id="gameCanvas" width="640" height="480"></canvas>
+            </main>
+        </div>
+    </div>
+
+    <!-- Ad and Buff System Modals -->
+    {% include 'game/ad_buff_modal.html' %}
+
+    <script>
+        // Add CSRF token to all fetch requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        // Override fetch to add CSRF token to POST requests
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            const [resource, config] = args;
+            if (config && config.method === 'POST') {
+                config.headers = config.headers || {};
+                config.headers['X-CSRFToken'] = csrftoken;
+            }
+            return originalFetch.apply(this, args);
+        };
+    </script>
+    <!-- Load Ad/Buff Manager first -->
+    <script src="{% static 'js/ad_buff_manager.js' %}"></script>
+    <!-- Then load main game -->
+    <script src="{% static 'js/game.js' %}"></script>
+</body>
+</html>

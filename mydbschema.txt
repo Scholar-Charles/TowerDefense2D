@@ -103,7 +103,7 @@ CREATE TABLE tower_upgrades (
     speed_bonus FLOAT DEFAULT 0,
     range_bonus FLOAT DEFAULT 0,
     cost INT NOT NULL,
-    image_path VARCHAR(100),  
+    image_path VARCHAR(100) 
 );
 
 

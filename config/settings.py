@@ -84,7 +84,11 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'game_home'
 LOGOUT_REDIRECT_URL = 'login'
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
+_csrf_env = os.environ.get('CSRF_TRUSTED_ORIGINS')
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [x.strip() for x in _csrf_env.split(',') if x.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
 
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'",)
